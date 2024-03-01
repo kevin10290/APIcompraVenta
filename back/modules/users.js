@@ -213,7 +213,7 @@ users.post("/users/login", (req, res) => {
 });
 
 // Devolver la rupa de la imagen desde la API: usando metodo get
-people.get("/users/sendimage/:photo", (req, res)=>{
+users.get("/users/sendimage/:photo", (req, res)=>{
   let photo = req.params.photo;
   let ruta = "./uploads/"+photo;
   fs.access(ruta, (err)=>{
