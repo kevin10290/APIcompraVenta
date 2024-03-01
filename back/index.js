@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/", require("./modules/users"));
-app.use("/", require("./modules/vehiculos"));
+//app.use("/", require("./modules/vehiculos"));
 
 app.listen(port, () => {
     console.log("App encendida: "+port);

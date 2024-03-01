@@ -1,6 +1,6 @@
 const express = require("express");
 const users = express.Router();
-const cnx = require("./bdata");
+const cnx = require("./MySql");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
