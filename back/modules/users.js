@@ -88,7 +88,7 @@ users.post("/users/create", [upload.single("foto")], (req, res) => {
   }
 });
 
-users.put("/users/edit/:id", (req, res) => {
+users.put("/users/edit/:id", [upload.single("foto")], (req, res) => {
   if (!req.file && !req.files) {
     res.status(404).send({
       status: "Error",
@@ -210,6 +210,22 @@ users.post("/users/login", (req, res) => {
       }
     }
   );
+});
+
+// Devolver la rupa de la imagen desde la API: usando metodo get
+people.get("/users/sendimage/:photo", (req, res)=>{
+  let photo = req.params.photo;
+  let ruta = "./uploads/"+photo;
+  fs.access(ruta, (err)=>{
+      if (err) {
+          res.status(400).send({
+              status: "Error Fs_Access",
+              message: err.message
+          });
+      } else {
+          res.sendFile(path.resolve(ruta));
+      }
+  })
 });
 
 module.exports = users;
