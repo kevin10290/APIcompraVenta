@@ -46,7 +46,7 @@ users.post("/users/create", (req, res) => {
   });
 });
 
-users.post("/users/edit", (req, res) => {
+users.put("/users/edit", (req, res) => {
   let frmdata = {
     nombre: req.body.nombre,
     apellido: req.body.apellido,
@@ -74,7 +74,7 @@ users.post("/users/edit", (req, res) => {
   });
 });
 
-users.post("/users/delete/:id", (req, res) => {
+users.delete("/users/delete/:id", (req, res) => {
   const id = req.params.id;
   cnx.query("DELETE usuario WHERE id = ?", id, (error, data) => {
     try {
