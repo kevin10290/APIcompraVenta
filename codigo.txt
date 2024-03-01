@@ -1,0 +1,93 @@
+const express = require("express");
+const users = express.Router();
+const cnx = require("./bdata");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+const bcrypt = require("bcrypt");
+
+// configuracion del middleware para subir archivos al server
+const almacenamiento = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/avatars/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, "pe-" + Date.now() + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage: almacenamiento });
+
+//insertar una persona : metodo post
+users.post("/users/create", (req, res) => {
+  let frmdata = {
+    name: req.body.name,
+    lastname: req.body.lastname,
+    position: req.body.position,
+    email: req.body.email,
+    password: bcrypt.hashSync(req.body.password, 10),
+    photo: req.body.photo,
+  };
+
+  cnx.query("INSERT INTO users SET ?", frmdata, (error, data) => {
+    try {
+      res.status(200).send({
+        status: "ok",
+        mensaje: "Operación exitosa",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(404).send({
+        status: "error",
+        mensaje: "Error en la insercion !",
+        error: error.message,
+      });
+    }
+  });
+});
+
+// autenticacion de un factor
+
+users.post("/users/login", (req, res) => {
+  //datos de la peticion (body)
+  let email = req.body.email;
+  let password = req.body.password;
+
+  //validamos que la data esté completa
+  if (!email || !password) {
+    res.status(400).send({
+      consulta: "error",
+      mensaje: "faltan datos por enviar del formulario ! ",
+    });
+  }
+  // buscar en la bd el usuario  y validar
+  cnx.query(
+    "SELECT name, lastname, email, password FROM users WHERE email like ?",
+    [email],
+    (error, consulta) => {
+      if (consulta.email == null) {
+        res.status(400).send({
+          status: "error",
+          mensaje: "Usuario no existe en la BD",
+        });
+      }
+      let pwd = bcrypt.compareSync(data.password, consulta.password);
+
+      if (!pwd) {
+        res.status(400).send({
+          status: "error",
+          mensaje: "Pwd Incorrecto !",
+        });
+      } else {
+        res.status(200).send({
+          consulta: "ok",
+          mensaje: "Ingreso exitoso al sistema!",
+          user: consulta.name + " " + consulta.lastname,
+          email: consulta.email,
+        });
+      }
+    }
+  );
+});
+
+module.exports = users;
