@@ -1,6 +1,6 @@
 const express = require("express");
 const users = express.Router();
-const cnx = require("./bdata");
+const cnx = require("./MySql");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
@@ -46,8 +46,55 @@ users.post("/users/create", (req, res) => {
   });
 });
 
-// autenticacion de un factor
+users.post("/users/edit", (req, res) => {
+  let frmdata = {
+    nombre: req.body.nombre,
+    apellido: req.body.apellido,
+    posicion: req.body.posicion,
+    correo: req.body.correo,
+    password: bcrypt.hashSync(req.body.password, 10),
+    foto: req.body.foto,
+  };
+  const id = req.body.id;
+  cnx.query("UPDATE FROM usuarios SET ? WHERE id = ?", [frmdata, id], (error, data) => {
+    try {
+      res.status(200).send({
+        status: "ok",
+        mensaje: "Operación exitosa",
+      });
+    } catch (error) {
+      console.log(error);
 
+      res.status(404).send({
+        status: "error",
+        mensaje: "Error en la actualizacion !",
+        error: error.message,
+      });
+    }
+  });
+});
+
+users.post("/users/delete/:id", (req, res) => {
+  const id = req.params.id;
+  cnx.query("DELETE usuarios WHERE id = ?", id, (error, data) => {
+    try {
+      res.status(200).send({
+        status: "ok",
+        mensaje: "Operación exitosa",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(404).send({
+        status: "error",
+        mensaje: "Error en la eliminacion !",
+        error: error.message,
+      });
+    }
+  });
+});
+
+// autenticacion de un factor
 users.post("/users/login", (req, res) => {
   //datos de la peticion (body)
   let correo = req.body.correo;
