@@ -17,6 +17,22 @@ const almacenamiento = multer.diskStorage({
 });
 const upload = multer({ storage: almacenamiento });
 
+users.get("/users/select", (req, res) => {
+  cnx.query("SELECT * FROM usuario", (error, data) => {
+    try {
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+
+      res.status(404).send({
+        status: "error",
+        mensaje: "Error en la seleccion !",
+        error: error.message,
+      });
+    }
+  });
+});
+
 //insertar una persona : metodo post
 users.post("/users/create", (req, res) => {
   let frmdata = {
