@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 // configuracion del middleware para subir archivos al server
 const almacenamiento = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "../uploads/");
+    cb(null, "./uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, "pe-" + Date.now() + "-" + file.originalname);
