@@ -28,7 +28,7 @@ users.post("/users/create", (req, res) => {
     foto: req.body.foto,
   };
 
-  cnx.query("INSERT INTO usuarios SET ?", frmdata, (error, data) => {
+  cnx.query("INSERT INTO usuario SET ?", frmdata, (error, data) => {
     try {
       res.status(200).send({
         status: "ok",
@@ -56,7 +56,7 @@ users.post("/users/edit", (req, res) => {
     foto: req.body.foto,
   };
   const id = req.body.id;
-  cnx.query("UPDATE FROM usuarios SET ? WHERE id = ?", [frmdata, id], (error, data) => {
+  cnx.query("UPDATE FROM usuario SET ? WHERE id = ?", [frmdata, id], (error, data) => {
     try {
       res.status(200).send({
         status: "ok",
@@ -76,7 +76,7 @@ users.post("/users/edit", (req, res) => {
 
 users.post("/users/delete/:id", (req, res) => {
   const id = req.params.id;
-  cnx.query("DELETE usuarios WHERE id = ?", id, (error, data) => {
+  cnx.query("DELETE usuario WHERE id = ?", id, (error, data) => {
     try {
       res.status(200).send({
         status: "ok",
@@ -109,7 +109,7 @@ users.post("/users/login", (req, res) => {
   }
   // buscar en la bd el usuario  y validar
   cnx.query(
-    "SELECT nombre, apellido, correo, password FROM usuarios WHERE correo = ? AND password = ?",
+    "SELECT nombre, apellido, correo, password FROM usuario WHERE correo = ? AND password = ?",
     [correo, password],
     (error, consulta) => {
       if (consulta.email == null) {
