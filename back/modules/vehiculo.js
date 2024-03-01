@@ -46,17 +46,17 @@ vehiculos.post("/vehiculos/create", (req, res) => {
   });
 });
 
-users.put("/vehiculos/edit", (req, res) => {
+users.put("/vehiculos/edit/:id", (req, res) => {
   let frmdata = {
     descripcion: req.body.descripcion,
     marca: req.body.marca,
     placa: req.body.placa,
     contrato: req.body.contrato,
   };
-  const idVehiculo = req.body.idVehiculo;
+  const id = req.params.id;
   cnx.query(
-    "UPDATE FROM vehiculo SET ? WHERE id = ?",
-    [frmdata, idVehiculo],
+    "UPDATE FROM vehiculo SET ? WHERE idVehiculo = ?",
+    [frmdata, id],
     (error, data) => {
       try {
         res.status(200).send({
@@ -77,10 +77,10 @@ users.put("/vehiculos/edit", (req, res) => {
 });
 
 users.delete("/vehiculos/delete/:id", (req, res) => {
-  const idVehiculo = req.params.idVehiculo;
+  const id = req.params.id;
   cnx.query(
     "DELETE vehiculo WHERE idVehiculo = ?",
-    idVehiculo,
+    id,
     (error, data) => {
       try {
         res.status(200).send({
