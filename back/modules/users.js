@@ -130,10 +130,18 @@ users.put("/users/edit/:id", [upload.single("foto")], (req, res) => {
       [frmdata, id],
       (error, data) => {
         try {
-          res.status(200).send({
-            status: "ok",
-            mensaje: "Operación exitosa",
-          });
+          if (error)
+          {
+            res.status(400).send({
+              status: "error",
+              mensaje: error.message,
+            });
+          } else {
+            res.status(200).send({
+              status: "ok",
+              mensaje: "Operación exitosa",
+            });
+          }
         } catch (error) {
           console.log(error);
 
