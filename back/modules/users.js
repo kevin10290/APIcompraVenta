@@ -34,60 +34,114 @@ users.get("/users/select", (req, res) => {
 });
 
 //insertar una persona : metodo post
-users.post("/users/create", (req, res) => {
-  let frmdata = {
-    nombre: req.body.nombre,
-    apellido: req.body.apellido,
-    posicion: req.body.posicion,
-    correo: req.body.correo,
-    password: bcrypt.hashSync(req.body.password, 10),
-    foto: req.body.foto,
-  };
-
-  cnx.query("INSERT INTO usuario SET ?", frmdata, (error, data) => {
-    try {
-      res.status(200).send({
-        status: "ok",
-        mensaje: "Operación exitosa",
-      });
-    } catch (error) {
-      console.log(error);
-
+users.post("/users/create", [upload.single("photo")], (req, res) => {
+    if (!req.file && !req.files) {
       res.status(404).send({
-        status: "error",
-        mensaje: "Error en la insercion !",
-        error: error.message,
+          status: "Error",
+          message: "No existe el archivo."
       });
-    }
-  });
+  }
+  //* Solo las extensiones png, jpg, jpeg
+  let archivo = req.file.originalname;
+  let extension = archivo.split(".");
+  extension = extension[1];
+  if (extension != "png" && extension != "jpg" && extension != "jpeg") {
+      fs.unlink(req.file.path,(err)=>{
+          if (err) {
+              res.status(400).send({
+                  status: "Error_DeleteFile",
+                  message: err
+              });
+          }
+      })
+      res.status(402).send({
+          status: "Error",
+          message: "La extensión no es valida."
+      });
+  } else {
+      // Recibimos la imagen al subir
+      let photo = req.file.filename;
+      let frmdata = {
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+        posicion: req.body.posicion,
+        correo: req.body.correo,
+        password: bcrypt.hashSync(req.body.password, 10),
+        foto: photo,
+      };
+      cnx.query("INSERT INTO usuario SET ?", frmdata, (error, data) => {
+        try {
+          res.status(200).send({
+            status: "ok",
+            mensaje: "Operación exitosa",
+          });
+        } catch (error) {
+          console.log(error);
+    
+          res.status(404).send({
+            status: "error",
+            mensaje: "Error en la insercion !",
+            error: error.message,
+          });
+        }
+      });
+  }
 });
 
-users.put("/users/edit", (req, res) => {
-  let frmdata = {
-    nombre: req.body.nombre,
-    apellido: req.body.apellido,
-    posicion: req.body.posicion,
-    correo: req.body.correo,
-    password: bcrypt.hashSync(req.body.password, 10),
-    foto: req.body.foto,
-  };
-  const id = req.body.id;
-  cnx.query("UPDATE FROM usuario SET ? WHERE id = ?", [frmdata, id], (error, data) => {
-    try {
-      res.status(200).send({
-        status: "ok",
-        mensaje: "Operación exitosa",
-      });
-    } catch (error) {
-      console.log(error);
-
-      res.status(404).send({
-        status: "error",
-        mensaje: "Error en la actualizacion !",
-        error: error.message,
-      });
-    }
-  });
+users.put("/users/edit/:id", (req, res) => {
+  if (!req.file && !req.files) {
+    res.status(404).send({
+        status: "Error",
+        message: "No existe el archivo."
+    });
+}
+//* Solo las extensiones png, jpg, jpeg
+let archivo = req.file.originalname;
+let extension = archivo.split(".");
+extension = extension[1];
+if (extension != "png" && extension != "jpg" && extension != "jpeg") {
+    fs.unlink(req.file.path,(err)=>{
+        if (err) {
+            res.status(400).send({
+                status: "Error_DeleteFile",
+                message: err
+            });
+        }
+    })
+    res.status(402).send({
+        status: "Error",
+        message: "La extensión no es valida."
+    });
+} else {
+    // Recibimos el id
+    let id = req.params.id;
+    // Recibimos la imagen al subir
+    let photo = req.file.filename;
+    let frmdata = {
+      nombre: req.body.nombre,
+      apellido: req.body.apellido,
+      posicion: req.body.posicion,
+      correo: req.body.correo,
+      password: bcrypt.hashSync(req.body.password, 10),
+      foto: photo,
+    };
+    cnx.query("UPDATE FROM usuario SET ? WHERE id = ?", [frmdata, id], (error, data) => {
+      try {
+        res.status(200).send({
+          status: "ok",
+          mensaje: "Operación exitosa",
+        });
+      } catch (error) {
+        console.log(error);
+  
+        res.status(404).send({
+          status: "error",
+          mensaje: "Error en la actualizacion !",
+          error: error.message,
+        });
+      }
+    });
+  }
 });
 
 users.delete("/users/delete/:id", (req, res) => {
