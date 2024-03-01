@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 // configuracion del middleware para subir archivos al server
 const almacenamiento = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./uploads/avatars/");
+    cb(null, "./uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, "pe-" + Date.now() + "-" + file.originalname);
@@ -89,7 +89,7 @@ users.post("/users/create", [upload.single("photo")], (req, res) => {
 });
 
 users.put("/users/edit/:id", (req, res) => {
-  if (!req.file.foto && !req.files.foto) {
+  if (!req.file && !req.files) {
     res.status(404).send({
       status: "Error",
       message: "No existe el archivo.",
