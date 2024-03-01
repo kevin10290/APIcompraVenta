@@ -89,7 +89,7 @@ users.post("/users/create", [upload.single("foto")], (req, res) => {
 });
 
 users.put("/users/edit/:id", (req, res) => {
-  if (!req.file.foto && !req.files.foto) {
+  if (!req.file && !req.files) {
     res.status(404).send({
       status: "Error",
       message: "No existe el archivo.",
