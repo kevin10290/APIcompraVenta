@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 const almacenamiento = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads/");
+    cb(null, "../uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, "pe-" + Date.now() + "-" + file.originalname);
@@ -34,7 +35,7 @@ users.get("/users/select", (req, res) => {
 });
 
 //insertar una persona : metodo post
-users.post("/users/create", [upload.single("photo")], (req, res) => {
+users.post("/users/create", [upload.single("foto")], (req, res) => {
   if (!req.file && !req.files) {
     res.status(404).send({
       status: "Error",
